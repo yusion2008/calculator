@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="cn">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="format-detection" content="email=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="author" content="xieyongshuang_gz" />
+	<title>简易js计算器</title>
+	<style type="text/css">
+	body,html{min-height:100%;margin:0;padding:0}html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent}body{position:relative;background:#fff;font-family:"Segoe UI","Lucida Grande",Helvetica,Arial,"Microsoft YaHei",FreeSans,Arimo,"Droid Sans","wenquanyi micro hei","Hiragino Sans GB","Hiragino Sans GB W3",FontAwesome,sans-serif;font-weight:400;line-height:1.6;color:#333;font-size:16px}a{color:#0e90d2}a:active,a:focus,a:hover{color:#095f8a;outline:0}a:focus{outline:thin dotted;outline:5px auto -webkit-focus-ring-color;outline-offset:-2px}a{text-decoration:none}img{max-width:100%;height:auto;vertical-align:middle;border:0}button,input,optgroup,select,textarea{color:inherit;font:inherit;margin:0}button{overflow:visible}button,input{line-height:normal}button,select{text-transform:none}input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{height:auto}button,input:not([type=radio]):not([type=checkbox]),select{vertical-align:middle}textarea{overflow:auto;vertical-align:top;resize:vertical}table{border-collapse:collapse;border-spacing:0;min-width:100%}td,th{padding:0}body,button,input,select,textarea{text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-moz-font-feature-settings:"liga","kern"}address,blockquote,dd,dl,dt,fieldset,figure,hr,li,ol,p,pre,ul{margin:0}dd,dl,dt,li,ol,ul{list-style:none;padding:0;margin:0}h1,h2,h3,h4,h5,h6{margin:0;font-weight:400;font-size:100%}em,i{font-style:normal}iframe{border:0}@media only screen and (min-width:1024px){.wrapper{max-width:320px;margin:0 auto}}body{background:#efefef}
+	.box{text-align: center;font-size:28px;padding-bottom: 20px;}
+	.box:after{content: "\20";display: block;clear: both;height: 0;overflow-y: hidden;}
+	.box .th{height: 60px;line-height: 60px; padding: 0 10px;text-align: right;background: #fff;border:2px solid #069;margin: 10px 5px;border-radius: 5px;box-shadow:  1px 2px 3px #777;overflow-y: hidden;}
+	.box .tb{width: 320px;margin: 0 auto;}
+	.box .number,.box .fun{float: left;}
+	.box .number{width: 240px;}
+	.box .fun{width: 80px;}
+	.box .btn{float: right;width: 70px;height: 70px;line-height: 70px;background: #69c;margin: 5px;color: #fff;cursor: pointer;border-radius: 5px;box-shadow:  1px 2px 3px #333}
+	.box i.btn{background: #069;}
+	</style>
+</head>
+<body>
+	<div class="wrapper">
+		<div class="box">
+			<div class="tit">简易js计算器 v1.0.0</div>
+			<div class="th" id="result">0</div>
+			<div class="tb" id="jsq">
+				<div class="number">
+				<em class="btn">×</em>
+				<em class="btn">-</em>				
+				<em class="btn">+</em>												
+				<i class="btn">9</i>
+				<i class="btn">8</i>
+				<i class="btn">7</i>
+				<i class="btn">6</i>
+				<i class="btn">5</i>
+				<i class="btn">4</i>
+				<i class="btn">3</i>
+				<i class="btn">2</i>
+				<i class="btn">1</i>	
+				<i class="btn">±</i>			
+				<i class="btn">.</i>				
+				<i class="btn">0</i>
+				</div>
+				<div class="fun">
+				<em class="btn">÷</em>
+				<em class="btn">%</em>
+				<em class="btn" style="color:red">←</em>	
+				<em class="btn" style="color:red">C</em>							
+				<em class="btn" style="background:#333">=</em>
+				</div>				
+			</div>
+		</div>
+	</div>	
+<script type="text/javascript">
+var result=document.getElementById("result");
+var btns=document.getElementById("jsq");
+var oprate=[];
+var typenum=true;
+/*
+检查用户上一步是否输入了运算符号
+ */
+function chk(){
+	var last=oprate[oprate.length-1];
+	if("+-%*/".indexOf(last)>-1){
+		return true;
+	}	
+}
+btns.onclick=function(e){
+	if(e.target.className=='btn'){			
+		//检查输入的数字位数
+		var s=result.innerHTML;
+		if(s.length>15){
+			typenum=false;//限制输入数字
+		}
+		var btn=e.target;
+		var v=btn.innerHTML;
+		if(v=="←"){//退格
+			typenum=true;
+			oprate.pop();
+			if(result.innerHTML!="0"){
+				var h=result.innerHTML;
+				if(h.length>1){
+					result.innerHTML=h.substr(0,h.length-1);
+					//删除运算符号
+					var last=oprate[oprate.length-1];
+					if("+-%*/".indexOf(last)>-1){
+						oprate.pop();
+					}
+				}else{
+					result.innerHTML="0";
+				}				
+			}
+		}
+		else if(v=="C"){//清除
+			oprate=[];
+			typenum=true;
+			result.innerHTML="0";
+		}
+		else if(v=="="){//计算结果
+			//如果用户最后输入的是运算符号，那么先删除
+			chk()&&oprate.pop();
+			var o=oprate.join("");
+			if(o==""){return false;}
+			oprate=[];//清空用户的输入
+			try  {
+			     var s=eval(o);
+			     result.innerHTML=s;
+			     oprate.push(s.toString());//将结果保存为用户的输入
+			     }
+			catch(err) {
+			     result.innerHTML="0";
+			     alert("你输入的["+o+"]不可计算。");
+			     }			
+			typenum=true;
+		}else if(v=="±"){//正负号
+			if(result.innerHTML!="0"){
+					var h=result.innerHTML;
+					h=h*-1;
+					result.innerHTML=h;
+					oprate.unshift("(-1)*");
+				}	
+			}
+		else if(v=="."&&typenum){
+			var h=result.innerHTML;
+			if(h.indexOf(".")==-1){
+				result.innerHTML=h+".";
+				oprate.push(v);
+			}
+		}
+		else if(v=="0"&&typenum){
+			var h=result.innerHTML;
+			if(h!="0"){
+				result.innerHTML+=v;
+				oprate.push(v);
+			}
+		}else if(v=="×"){
+			if(chk()){return false;}
+			result.innerHTML=v;
+			oprate.push("*");
+			typenum=true;
+		}
+		else if(v=="÷"){
+			if(chk()){return false;}
+			result.innerHTML=v;
+			oprate.push("/");
+			typenum=true;
+		}
+		else if(v=="+"){
+			if(chk()){return false;}
+			result.innerHTML=v;
+			oprate.push(v);
+			typenum=true;
+		}
+		else if(v=="-"){
+			if(chk()){return false;}
+			result.innerHTML=v;
+			oprate.push(v);
+			typenum=true;
+		}
+		else if(v=="%"){
+			if(chk()){return false;}
+			result.innerHTML=v;
+			oprate.push(v);
+			typenum=true;
+		}	
+		else{
+			if(!typenum){return false;}
+			var h=result.innerHTML;
+			if(h!="0"){
+				result.innerHTML+=v;						
+			}else{
+				result.innerHTML=v;
+			}
+			oprate.push(v);	
+		}
+		console.log(oprate);//用于测试，可删除			
+		}
+	}
+
+</script>
+</body>
+</html>
